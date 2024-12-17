@@ -28,7 +28,7 @@ ids_array = np.array(ids)
 plots_array = np.array(plots, dtype=object)  # Use dtype=object for text data
 
 # Save arrays for later use
-np.savez("../data/subtitles_data.npz", ids=ids_array, plots=plots_array)
+np.savez("../data/processed/subtitles_data.npz", ids=ids_array, plots=plots_array)
 
 # Print confirmation
 print(f"Processed {len(ids)} subtitle files.")
