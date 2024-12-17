@@ -3,14 +3,14 @@ import pandas as pd
 import shutil
 
 # Load the links.csv file
-links_file = "data/Sublens_20M/Sublens_20M_metadata/links.csv"
+links_file = "../data/Sublens_20M/Sublens_20M_metadata/links.csv"
 df = pd.read_csv(links_file)
 
 # Create a dictionary for quick lookup of movielens_id by imdb_id
 id_map = {str(imdb_id).zfill(7): str(movielens_id) for movielens_id, imdb_id in zip(df['movieId'], df['imdbId'])}
 
 # Define the source and destination folders
-subtitles_folder = "data/Sublens_20M/subtitles"
+subtitles_folder = "../data/Sublens_20M/subtitles"
 movielens_subs_folder = "data/Sublens_20M/movielens_subs"
 os.makedirs(movielens_subs_folder, exist_ok=True)
 

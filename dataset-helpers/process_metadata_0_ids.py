@@ -1,14 +1,14 @@
 import pandas as pd
 
 # Load the links.csv file
-links_file = "data/ml-20m/links.csv"
+links_file = "../data/ml-20m/links.csv"
 links_df = pd.read_csv(links_file)
 
 # Create a dictionary for quick lookup of movielens_id by tmdb_id
 id_map = {tmdb_id: movielens_id for movielens_id, tmdb_id in zip(links_df['movieId'], links_df['tmdbId'])}
 
 # Load the movies_metadata.csv file
-metadata_file = "data/ml-20m/movies_metadata.csv"
+metadata_file = "../data/ml-20m/movies_metadata.csv"
 metadata_df = pd.read_csv(metadata_file)
 
 # Replace 'id' (tmdbId) with movielens_id using the mapping while avoiding conflicts
