@@ -9,7 +9,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 # Load pre-trained ViT model from torchvision
-vit_model = models.vit_l_16(weights=models.ViT_L_16_Weights.DEFAULT).to(device)
+vit_model = models.vit_h_14(weights=models.ViT_H_14_Weights.IMAGENET1K_SWAG_LINEAR_V1).to(device)
+vit_model.eval()
 
 # Define image transformations
 transform = transforms.Compose([
@@ -20,7 +21,7 @@ transform = transforms.Compose([
 
 # Folder paths
 image_folder = "../data/processed/posters"  # Replace with your posters folder
-output_file = "../data/processed/posters_vit_features.npz"  # Replace with the path for saving features
+output_file = "../data/processed/posters_vit_H_14_features.npz"  # Replace with the path for saving features
 
 # Initialize lists for features and IDs
 features = []
