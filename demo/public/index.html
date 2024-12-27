@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Recommender Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    #controls { padding: 10px; background: #f4f4f4; display: flex; justify-content: space-between; align-items: center; }
+    #results { padding: 10px; }
+    #statusBar { position: fixed; bottom: 0; left: 0; right: 0; background: #333; color: white; text-align: center; padding: 10px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
+    img { width: 224px; height: 224px; }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <div>
+      <button id="less50Btn">Less than 50 Ratings</button>
+      <button id="50to150Btn">50 to 150 Ratings</button>
+      <button id="150to300Btn">150 to 300 Ratings</button>
+      <button id="more300Btn">More than 300 Ratings</button>
+      <button id="randomUserBtn">Random User</button>
+    </div>
+    <div>
+      <label for="modalitySelect">Recommendation Modality:</label>
+      <select id="modalitySelect">
+        <option value="8083" selected>Text and Image Modalities</option>
+        <option value="8081">Text Modality Only</option>
+        <option value="8082">Image Modality Only</option>
+      </select>
+    </div>
+  </div>
+  <div id="results">
+    <table id="recommendationsTable">
+      <thead>
+        <tr>
+          <th>Poster</th>
+          <th>Title</th>
+          <th>Release Year</th>
+          <th>Director</th>
+          <th>Cast</th>
+          <th>Vote Count</th>
+          <th>Vote Average</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div id="statusBar">Status: Waiting for interaction...</div>
+
+  <script>
+    let port = "8083"; // Default to Text and Image modalities
+
+    // Update the port based on the selected modality
+    document.getElementById('modalitySelect').addEventListener('change', (event) => {
+      port = event.target.value;
+    });
+
+    async function fetchRecommendations(userId) {
+      const statusBar = document.getElementById('statusBar');
+      const startTime = performance.now(); // Start timing
+
+      try {
+        const response = await fetch(`http://127.0.0.1:${port}/recommend?uid=${userId}&k=5&remove_seen=false`);
+        const data = await response.json();
+        const endTime = performance.now(); // End timing
+        const elapsed = (endTime - startTime).toFixed(3);
+
+        statusBar.textContent = `Status: Response received in ${elapsed} ms`;
+
+        const tableBody = document.querySelector('#recommendationsTable tbody');
+        tableBody.innerHTML = '';
+
+        for (const movieId of data.recommendations) {
+          const movie = moviesMetadata[movieId];
+          if (!movie) continue;
+
+          const posterUrl = `/posters/${movie.id}.jpg`;
+          const releaseYear = movie.release_date.split('-')[0];
+          const director = (JSON.parse(movie.production_companies || '[]')[0] || {}).name || 'N/A';
+          const cast = (JSON.parse(movie.spoken_languages || '[]').slice(0, 3).map(c => c.name) || []).join(', ') || 'N/A';
+
+          const row = `
+            <tr>
+              <td><img src="${posterUrl}" alt="Poster for ${movie.title}"></td>
+              <td>${movie.title}</td>
+              <td>${releaseYear}</td>
+              <td>${director}</td>
+              <td>${cast}</td>
+              <td>${movie.vote_count}</td>
+              <td>${movie.vote_average}</td>
+            </tr>
+          `;
+          tableBody.innerHTML += row;
+        }
+      } catch (error) {
+        statusBar.textContent = `Status: Error - ${error.message}`;
+      }
+    }
+
+    async function fetchRandomUsers() {
+      const response = await fetch('/get-random-users');
+      const users = await response.json();
+
+      // Attach event listeners to buttons with user IDs
+      document.getElementById('less50Btn').onclick = () => fetchRecommendations(users.less_than_50);
+      document.getElementById('50to150Btn').onclick = () => fetchRecommendations(users["50_to_150"]);
+      document.getElementById('150to300Btn').onclick = () => fetchRecommendations(users["150_to_300"]);
+      document.getElementById('more300Btn').onclick = () => fetchRecommendations(users.more_than_300);
+      document.getElementById('randomUserBtn').onclick = () => fetchRecommendations(users.random);
+    }
+
+    // Fetch and bind random user IDs on page load
+    document.addEventListener('DOMContentLoaded', fetchRandomUsers);
+  </script>
+</body>
+</html>
