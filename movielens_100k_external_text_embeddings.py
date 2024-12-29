@@ -102,7 +102,7 @@ class PrecomputedTextModality(TextModality):
 
 
 # Load extracted features from posters
-image_data = np.load("data/processed/posters_vit_H_14_features_v2.npz")
+image_data = np.load("data/processed/posters_vgg16_features_v2.npz", allow_pickle=True)
 image_features = image_data['features']
 image_item_ids = image_data['ids']
 
@@ -143,7 +143,7 @@ ratio_split = RatioSplit(
 
 dmrl_recommender = cornac.models.dmrl.DMRL(
     batch_size=1024,
-    epochs=60,
+    epochs=120,
     log_metrics=True,
     learning_rate=0.001,
     num_factors=2,
@@ -151,7 +151,7 @@ dmrl_recommender = cornac.models.dmrl.DMRL(
     decay_c=0.1,
     num_neg=5,
     embedding_dim=100,
-    image_dim=1280,
+    image_dim=4096,
     dropout=0,
     bert_text_dim=768
 )
