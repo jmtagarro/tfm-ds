@@ -69,6 +69,8 @@ This demo allows you to run three different models based on the modalities used:
    * Running on http://127.0.0.1:808X
    ```
 
+NOTE: At the time of writing the DMRL implementation in Cornac does not support saving the model to a file due to the thread locks present in the model code not being compatible with pickle. Once the implementation is fixed within Cornac the steps in this guide will launch the demo correctly.
+
 ### Step 2: Set Up and Run the Node.js Web Application
 1. Navigate to the `demo` folder:
    ```bash
